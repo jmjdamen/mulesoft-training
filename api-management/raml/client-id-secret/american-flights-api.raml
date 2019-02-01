@@ -1,0 +1,50 @@
+#%RAML 1.0
+version: v1
+title: American Flights API
+securedBy: oauth2_0
+
+securitySchemes:
+  oauth2_0: !include securitySchemes/oauth2_0.raml
+
+traits:
+  client-id-secret: !include traits/client-id-secret.raml
+
+types: 
+  AmericanFlight: !include exchange_modules/68ef9520-24e9-4cf2-b2f5-620025690913/training-american-flight-data-type/1.0.1/AmericanFlightDataType.raml
+
+/flights:
+  get:
+    is: [client-id-secret]
+    queryParameters: 
+      destination:
+        required: false
+        enum: 
+          - SFO
+          - LAX
+          - CLE
+    responses: 
+      200:
+        body: 
+          application/json:
+            type: AmericanFlight[]
+            examples: !include exchange_modules/68ef9520-24e9-4cf2-b2f5-620025690913/training-american-flights-example/1.0.1/AmericanFlightsExample.raml
+  post:          
+    body: 
+      application/json:
+        type: AmericanFlight
+        examples: !include examples/AmericanFlightNoIDExample.raml
+    responses: 
+      201:
+        body: 
+          application/json:
+            example:
+              message: Flight added (but not really)
+  /{ID}:
+    get:
+      is: [client-id-secret]
+      responses: 
+        200:
+          body: 
+            application/json:
+              type: AmericanFlight
+              examples: !include examples/AmericanFlightExample.raml
